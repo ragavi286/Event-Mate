@@ -25,14 +25,6 @@ Event-Mate is a smart event management platform designed to simplify the process
 
 ---
 
-## Demo Login Credentials
-
-You may explore the system using the following demo accounts:
-
-| Role | Email | Password |
-|-------|--------|------------|
-| Client | `demo_client_ranjeetha@eventmate.com` | `1234` |
-| Vendor | `demo_vendor_ranjeetha@eventmate.com` | `12345` |
 
 ---
 
