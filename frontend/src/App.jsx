@@ -52,10 +52,12 @@ let initialDemoVendors = [
     { id: 4, businessName: "Music Makers DJ", businessType: "Entertainment", location: "Chennai", capacity: 500, budgetRange: "₹15,000 - ₹40,000", phone: "9876543213", email: "music@dj.com", amenities: ["Sound System"], rating: 4.9, userId: 'vendor_4' },
 ];
 
-const initialDemoBookings = [
-    { id: 101, eventId: 1, vendorId: 6, vendorName: "Ranjeetha's Catering", clientName: 'Ranjeetha M', clientEmail: 'ranjeethademo@gmail.com', clientPhone: '9428855637', eventTitle: 'My Birthday Party', date: '2025-09-30', location: 'Chennai', guests: 50, budget: 500, description: 'balloon', status: 'Pending' },
-    { id: 102, eventId: 2, vendorId: 3, vendorName: "Shutterbug Photos", clientName: 'Demo Client', clientEmail: 'client@demo.com', clientPhone: '1234567890', eventTitle: 'Team Building Workshop', date: '2025-10-15', location: 'Bangalore', guests: 20, budget: 1200, description: 'Need full day coverage.', status: 'Accepted' },
-    { id: 103, eventId: 1, vendorId: 4, vendorName: "Music Makers DJ", clientName: 'Ranjeetha M', clientEmail: 'ranjeethademo@gmail.com', clientPhone: '9428855637', eventTitle: 'My Birthday Party', date: '2025-09-30', location: 'Chennai', guests: 50, budget: 500, description: 'Need a good playlist.', status: 'Pending' },
+let initialDemoBookings = [
+    // Test booking for The Grand Hall on a recent date to test conflict
+    { id: 101, eventId: 1, vendorId: 1, vendorName: "The Grand Hall", clientName: 'Demo Client', clientEmail: 'demo@client.com', clientPhone: '9876543210', eventTitle: 'Corporate Meeting', date: '2025-10-23', location: 'Chennai', guests: 100, budget: 50000, description: 'Annual meeting', status: 'Accepted' },
+    { id: 102, eventId: 2, vendorId: 3, vendorName: "Shutterbug Photos", clientName: 'Demo Client', clientEmail: 'client@demo.com', clientPhone: '1234567890', eventTitle: 'Team Building Workshop', date: '2025-10-24', location: 'Bangalore', guests: 20, budget: 1200, description: 'Need full day coverage.', status: 'Accepted' },
+    { id: 103, eventId: 3, vendorId: 4, vendorName: "Music Makers DJ", clientName: 'Demo Client', clientEmail: 'demo@client.com', clientPhone: '9876543210', eventTitle: 'Birthday Party', date: '2025-10-25', location: 'Chennai', guests: 50, budget: 15000, description: 'Need a good playlist.', status: 'Pending' },
+    { id: 104, eventId: 4, vendorId: 6, vendorName: "Ranjeetha's Catering", clientName: 'Demo Client', clientEmail: 'demo@client.com', clientPhone: '9876543210', eventTitle: 'Wedding Reception', date: '2025-10-26', location: 'Chennai', guests: 200, budget: 80000, description: 'Traditional catering needed', status: 'Accepted' },
 ];
 
 let initialDemoServices = [
@@ -293,7 +295,9 @@ const BookingCard = ({ booking, role, onAction }) => {
     );
 };
 
-const VendorCard = ({ vendor, onBook }) => (
+const VendorCard = ({ vendor, onBook }) => {
+    console.log('VendorCard rendering for:', vendor.businessName);
+    return (
     <Card className="p-4 flex flex-col justify-between hover:shadow-xl transition duration-300">
         <div className="flex items-center mb-3">
             <Briefcase className="w-6 h-6 text-indigo-500 mr-3" />
@@ -306,15 +310,19 @@ const VendorCard = ({ vendor, onBook }) => (
             <p className="flex items-center"><Star className="w-4 h-4 mr-1 text-yellow-500" fill="currentColor" /> Rating: {vendor.rating}</p>
         </div>
         <div className="flex flex-wrap gap-1 mb-4">
-            {vendor.amenities.map(a => (
+            {(vendor.amenities || []).map(a => (
                 <span key={a} className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-500">{a}</span>
             ))}
         </div>
-        <Button onClick={() => onBook(vendor)} size="sm" className="w-full">
+        <Button onClick={() => {
+            console.log('Book Service clicked for:', vendor.businessName);
+            onBook(vendor);
+        }} size="sm" className="w-full">
             Book Service
         </Button>
     </Card>
-);
+    );
+};
 
 const ServiceCard = ({ service, onEdit, onDelete }) => (
     <Card className="flex justify-between items-center p-4 mb-4">
@@ -362,23 +370,22 @@ const LandingPageView = ({ setView, setUserRole }) => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 flex flex-col">
+        <div className="min-h-screen bg-gradient-to-br white flex flex-col">
             <header className="flex justify-between items-center p-4 text-white">
-                <div className="flex items-center text-xl font-bold">
-                    <Sparkles className="w-6 h-6 mr-2" />
+                <div className="flex items-center text-xl font-bold text-black dark:text-black">
                     {APP_NAME}
                 </div>
                 <div className="space-x-4">
-                    <Button variant="ghost" className="text-white hover:bg-white hover:text-indigo-600" onClick={() => handleRoleSelect(USER_ROLES.CLIENT)}>
+                    <Button variant="secondary" className="bg-white text-black hover:bg-gray-100" onClick={() => handleRoleSelect(USER_ROLES.CLIENT)}>
                         Sign In
                     </Button>
-                    <Button variant="secondary" className="bg-white text-indigo-600 hover:bg-gray-100" onClick={() => handleRoleSelect(USER_ROLES.CLIENT)}>
+                    <Button variant="secondary" className="bg-white text-black hover:bg-gray-100" onClick={() => handleRoleSelect(USER_ROLES.CLIENT)}>
                         Get Started
                     </Button>
                 </div>
             </header>
 
-            <main className="flex-1 flex flex-col justify-center items-center p-6 text-white text-center">
+            <main className="flex-1 flex flex-col justify-center items-center p-6 text-black text-center">
                 <h1 className="text-5xl md:text-6xl font-extrabold mb-4">
                     Plan Your Perfect Event
                 </h1>
@@ -387,20 +394,20 @@ const LandingPageView = ({ setView, setUserRole }) => {
                 </p>
 
                 <div className="flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-12">
-                    <Card className="bg-white bg-opacity-10 backdrop-blur-sm w-80 p-8 flex flex-col items-center border border-white/20 text-white">
-                        <User className="w-16 h-16 text-white mb-4" />
+                    <Card className="bg-white bg-opacity-10 backdrop-blur-sm w-80 p-8 flex flex-col items-center border border-black text-black">
+                        <User className="w-16 h-16 text-black mb-4" />
                         <h2 className="text-2xl font-semibold mb-2">I'm a Client</h2>
                         <p className="text-sm opacity-70 mb-6">Book events and find vendors</p>
-                        <Button variant="secondary" className="bg-indigo-600 hover:bg-indigo-700 text-white" onClick={() => handleRoleSelect(USER_ROLES.CLIENT)}>
+                        <Button variant="secondary" className="bg-emerald-500 hover:bg-emerald-600 text-white" onClick={() => handleRoleSelect(USER_ROLES.CLIENT)}>
                             Get Started
                         </Button>
                     </Card>
 
-                    <Card className="bg-white bg-opacity-10 backdrop-blur-sm w-80 p-8 flex flex-col items-center border border-white/20 text-white">
-                        <Briefcase className="w-16 h-16 text-white mb-4" />
+                    <Card className="bg-white bg-opacity-10 backdrop-blur-sm w-80 p-8 flex flex-col items-center border border-black text-black">
+                        <Briefcase className="w-16 h-16 text-black mb-4" />
                         <h2 className="text-2xl font-semibold mb-2">I'm a Vendor</h2>
                         <p className="text-sm opacity-70 mb-6">Offer services and manage bookings</p>
-                        <Button variant="success" className="bg-emerald-500 hover:bg-emerald-600 text-white" onClick={() => handleRoleSelect(USER_ROLES.VENDOR)}>
+                        <Button variant="secondary" className="bg-emerald-500 hover:bg-emerald-600 text-white" onClick={() => handleRoleSelect(USER_ROLES.VENDOR)}>
                             Join as Vendor
                         </Button>
                     </Card>
@@ -446,14 +453,15 @@ const AuthView = ({ setView, setUserRole, setUserId, userRole, setVendorProfile 
 
             if (isSignIn) {
                 const data = await response.json();
-                // In a real app, you would decode the token to get the real user ID and role
-                // For this demo, we are mocking this process.
-                const mockUserId = email.toLowerCase().includes('vendor') ? VENDOR_DEMO_ID : CLIENT_DEMO_ID;
-                const mockUserRole = email.toLowerCase().includes('vendor') ? USER_ROLES.VENDOR : USER_ROLES.CLIENT;
+                // Store the JWT token
+                localStorage.setItem('token', data.accessToken);
                 
-                setUserId(mockUserId);
-                setUserRole(mockUserRole);
-                // No need to call setView here, the useEffect in App will handle redirection.
+                // Use the actual user email as userId
+                setUserId(email);
+                // Default to CLIENT role for login (in a real app, this would come from the JWT token)
+                setUserRole(USER_ROLES.CLIENT);
+                // Force set view to dashboard after successful login
+                setView(VIEWS.DASHBOARD);
 
             } else {
                 // Automatically switch to login view after successful registration
@@ -479,11 +487,8 @@ const AuthView = ({ setView, setUserRole, setUserId, userRole, setVendorProfile 
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br white p-4">
             <Card className="max-w-md w-full p-8 text-center">
-                <div className="flex justify-center mb-6">
-                    <Sparkles className="w-8 h-8 text-indigo-600" />
-                </div>
                 <h2 className="text-3xl font-bold mb-2">
                     {isSignIn ? 'Welcome back' : 'Create Account'}
                 </h2>
@@ -687,8 +692,323 @@ const VendorOnboardingView = ({ setView, userId, setVendorProfile }) => {
     );
 };
 
-const ClientDashboardView = ({ events, setView, setSelectedEventId }) => {
-    const userEvents = events.filter(e => e.userId === CLIENT_DEMO_ID);
+const AISuggestionsCard = ({ userId }) => {
+    const [suggestions, setSuggestions] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [userInput, setUserInput] = useState('');
+
+    // OpenAI Integration Function
+    const getOpenAIResponse = async (userQuery) => {
+        const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API_KEY;
+        
+        if (!OPENAI_API_KEY) {
+            return null; // Fallback to rule-based AI
+        }
+
+        try {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${OPENAI_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-3.5-turbo',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: `You are an expert event planning assistant. Provide practical, specific advice for event planning questions. 
+                            Format your response as JSON with this structure:
+                            {
+                                "type": "Event Type or Question Category",
+                                "ideas": ["idea1", "idea2", "idea3", "idea4", "idea5"],
+                                "budget": "₹X,XXX - ₹X,XXX",
+                                "vendors": ["vendor1", "vendor2", "vendor3"]
+                            }
+                            Keep responses practical and India-focused with rupee pricing.`
+                        },
+                        {
+                            role: 'user',
+                            content: userQuery
+                        }
+                    ],
+                    max_tokens: 500,
+                    temperature: 0.7
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('OpenAI API error');
+            }
+
+            const data = await response.json();
+            const aiResponse = JSON.parse(data.choices[0].message.content);
+            
+            return {
+                type: aiResponse.type,
+                ideas: aiResponse.ideas,
+                budget: aiResponse.budget,
+                vendors: aiResponse.vendors
+            };
+        } catch (error) {
+            console.error('OpenAI API error:', error);
+            return null;
+        }
+    };
+
+    const aiSuggestions = [
+        {
+            type: "Birthday Party",
+            ideas: ["Themed decorations", "Custom cake design", "Photo booth setup", "Party games", "Balloon arrangements"],
+            budget: "₹15,000 - ₹30,000",
+            vendors: ["Decorators", "Bakers", "Photographers"]
+        },
+        {
+            type: "Wedding",
+            ideas: ["Venue decoration", "Catering menu", "Photography package", "Music & DJ", "Floral arrangements"],
+            budget: "₹2,00,000 - ₹5,00,000",
+            vendors: ["Wedding Planners", "Caterers", "Photographers", "Florists"]
+        },
+        {
+            type: "Corporate Event",
+            ideas: ["Professional venue", "Audio-visual setup", "Catering service", "Welcome desk", "Branded materials"],
+            budget: "₹50,000 - ₹1,50,000",
+            vendors: ["Event Managers", "AV Technicians", "Caterers"]
+        },
+        {
+            type: "Baby Shower",
+            ideas: ["Pastel decorations", "Themed cake", "Games & activities", "Gift corner", "Photo memories"],
+            budget: "₹10,000 - ₹25,000",
+            vendors: ["Decorators", "Bakers", "Photographers"]
+        }
+    ];
+
+    const generateSuggestions = () => {
+        setLoading(true);
+        // Simulate AI processing
+        setTimeout(() => {
+            const randomSuggestion = aiSuggestions[Math.floor(Math.random() * aiSuggestions.length)];
+            setSuggestions([randomSuggestion]);
+            setLoading(false);
+        }, 1500);
+    };
+
+    const getPersonalizedSuggestions = async () => {
+        if (!userInput.trim()) {
+            generateSuggestions();
+            return;
+        }
+
+        setLoading(true);
+        
+        // Try OpenAI first, fallback to rule-based AI
+        try {
+            const openAIResponse = await getOpenAIResponse(userInput);
+            if (openAIResponse) {
+                setSuggestions([openAIResponse]);
+                setLoading(false);
+                return;
+            }
+        } catch (error) {
+            console.log('OpenAI not available, using rule-based AI');
+        }
+
+        // Fallback to rule-based AI processing
+        setTimeout(() => {
+            const input = userInput.toLowerCase();
+            let customSuggestion;
+
+            // Smart AI responses based on specific questions
+            if (input.includes('cake') && input.includes('kg')) {
+                const peopleMatch = input.match(/(\d+)\s*people/);
+                const people = peopleMatch ? parseInt(peopleMatch[1]) : 50;
+                const cakeKg = Math.ceil(people / 10); // 1kg per 10 people rule
+                
+                customSuggestion = {
+                    type: "Cake Planning Assistant",
+                    ideas: [
+                        `For ${people} people, you need approximately ${cakeKg}kg cake`,
+                        `Consider 2-3 flavors: Chocolate, Vanilla, Strawberry`,
+                        `Add 0.5kg extra for safety margin = ${cakeKg + 0.5}kg total`,
+                        `Budget estimate: ₹${cakeKg * 800} - ₹${cakeKg * 1200} for quality cake`,
+                        `Order 2-3 days in advance for custom designs`
+                    ],
+                    budget: `₹${cakeKg * 800} - ₹${cakeKg * 1200}`,
+                    vendors: ["Custom Bakers", "Cake Shops", "Pastry Chefs"]
+                };
+            }
+            else if (input.includes('budget') || input.includes('cost') || input.includes('price')) {
+                const eventType = input.includes('wedding') ? 'Wedding' : 
+                                input.includes('birthday') ? 'Birthday Party' : 
+                                input.includes('corporate') ? 'Corporate Event' : 'General Event';
+                
+                customSuggestion = {
+                    type: `${eventType} Budget Planner`,
+                    ideas: [
+                        "Venue: 40-50% of total budget",
+                        "Catering: 25-30% of total budget", 
+                        "Decoration: 10-15% of total budget",
+                        "Photography: 8-12% of total budget",
+                        "Miscellaneous: 5-10% of total budget"
+                    ],
+                    budget: eventType === 'Wedding' ? "₹2,00,000 - ₹5,00,000" : 
+                           eventType === 'Corporate Event' ? "₹50,000 - ₹1,50,000" : "₹15,000 - ₹50,000",
+                    vendors: ["Event Planners", "Caterers", "Decorators", "Photographers"]
+                };
+            }
+            else if (input.includes('guest') || input.includes('people')) {
+                const peopleMatch = input.match(/(\d+)/);
+                const guestCount = peopleMatch ? parseInt(peopleMatch[1]) : 50;
+                
+                customSuggestion = {
+                    type: `Event Planning for ${guestCount} Guests`,
+                    ideas: [
+                        `Venue capacity needed: ${Math.ceil(guestCount * 1.2)} (20% buffer)`,
+                        `Catering: ${guestCount} plates + 5-10 extra`,
+                        `Seating arrangement: ${Math.ceil(guestCount / 8)} tables (8 per table)`,
+                        `Parking space: ${Math.ceil(guestCount / 3)} vehicles expected`,
+                        `Restroom facilities: Minimum ${Math.ceil(guestCount / 25)} units`
+                    ],
+                    budget: `₹${guestCount * 500} - ₹${guestCount * 1500} (₹500-1500 per person)`,
+                    vendors: ["Venue Providers", "Caterers", "Furniture Rental"]
+                };
+            }
+            else if (input.includes('decoration') || input.includes('theme') || input.includes('decore') || 
+                     input.includes('decor') || input.includes('room') || input.includes('things needed') ||
+                     input.includes('decorat') || input.includes('items') || input.includes('setup')) {
+                customSuggestion = {
+                    type: "Room Decoration Essentials",
+                    ideas: [
+                        "🎈 Balloons & streamers in theme colors",
+                        "🌸 Fresh flowers or artificial arrangements",
+                        "💡 String lights & fairy lights for ambiance",
+                        "🖼️ Photo booth backdrop with props",
+                        "🕯️ Candles & table centerpieces",
+                        "🎊 Banners, posters & welcome signs",
+                        "🪑 Chair covers & table runners",
+                        "🎭 Theme-specific props & accessories"
+                    ],
+                    budget: "₹8,000 - ₹25,000 (depending on room size)",
+                    vendors: ["Decorators", "Florists", "Lighting Specialists", "Party Supply Stores"]
+                };
+            }
+            else {
+                // Default intelligent matching
+                const matchedSuggestion = aiSuggestions.find(s => 
+                    s.type.toLowerCase().includes(input) ||
+                    input.includes(s.type.toLowerCase())
+                ) || aiSuggestions[0];
+
+                customSuggestion = {
+                    ...matchedSuggestion,
+                    ideas: matchedSuggestion.ideas.map(idea => 
+                        input.includes('luxury') || input.includes('premium') ? `Premium ${idea.toLowerCase()}` :
+                        input.includes('budget') || input.includes('cheap') ? `Budget-friendly ${idea.toLowerCase()}` :
+                        idea
+                    )
+                };
+            }
+
+            setSuggestions([customSuggestion]);
+            setLoading(false);
+        }, 1500);
+    };
+
+    return (
+        <Card className="bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200">
+            <div className="p-6">
+                <div className="flex items-center mb-4">
+                    <div className="bg-purple-100 p-2 rounded-lg mr-3">
+                        <Zap className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-semibold text-gray-800">AI Event Suggestions</h3>
+                        <p className="text-sm text-gray-600">Get personalized event planning ideas</p>
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <div className="flex gap-2">
+                        <input
+                            type="text"
+                            placeholder="Describe your event (e.g., 'birthday party for 50 people' or 'corporate meeting')"
+                            value={userInput}
+                            onChange={(e) => setUserInput(e.target.value)}
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            onKeyPress={(e) => e.key === 'Enter' && getPersonalizedSuggestions()}
+                        />
+                        <Button 
+                            onClick={getPersonalizedSuggestions}
+                            disabled={loading}
+                            className="bg-purple-600 hover:bg-purple-700"
+                        >
+                            {loading ? (
+                                <div className="flex items-center">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                    AI Thinking...
+                                </div>
+                            ) : (
+                                <>
+                                    <Zap className="w-4 h-4 mr-1" />
+                                    Get AI Ideas
+                                </>
+                            )}
+                        </Button>
+                    </div>
+
+                    {suggestions.length > 0 && (
+                        <div className="bg-white rounded-lg p-4 border border-purple-200">
+                            {suggestions.map((suggestion, index) => (
+                                <div key={index} className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="font-semibold text-lg text-purple-800">{suggestion.type}</h4>
+                                        <span className="text-sm bg-purple-100 text-purple-700 px-2 py-1 rounded">
+                                            {suggestion.budget}
+                                        </span>
+                                    </div>
+                                    
+                                    <div>
+                                        <h5 className="font-medium text-gray-700 mb-2">💡 AI Suggestions:</h5>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                            {suggestion.ideas.map((idea, i) => (
+                                                <div key={i} className="flex items-center text-sm text-gray-600">
+                                                    <div className="w-2 h-2 bg-purple-400 rounded-full mr-2"></div>
+                                                    {idea}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h5 className="font-medium text-gray-700 mb-2">🏪 Recommended Vendors:</h5>
+                                        <div className="flex flex-wrap gap-2">
+                                            {suggestion.vendors.map((vendor, i) => (
+                                                <span key={i} className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full">
+                                                    {vendor}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {suggestions.length === 0 && (
+                        <div className="text-center py-8 text-gray-500">
+                            <Zap className="w-12 h-12 mx-auto mb-3 text-purple-400" />
+                            <p className="font-medium">Ready to help you plan!</p>
+                            <p className="text-sm">Describe your event or click "Get AI Ideas" for inspiration</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </Card>
+    );
+};
+
+const ClientDashboardView = ({ events, setView, setSelectedEventId, userId }) => {
+    const userEvents = events.filter(e => e.userId === userId);
     const upcomingEvents = userEvents.filter(e => new Date(e.startTime) > new Date()).slice(0, 3);
     const totalEvents = userEvents.length;
     const completedEvents = userEvents.filter(e => e.status === 'Completed').length;
@@ -706,7 +1026,7 @@ const ClientDashboardView = ({ events, setView, setSelectedEventId }) => {
     return (
         <div className="p-6 space-y-8">
             <header className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold text-gray-800">Welcome back, Ranjeetha!</h1>
+                <h1 className="text-3xl font-bold text-gray-800">Welcome back, {userId ? userId.split('@')[0] : 'User'}!</h1>
                 <Button onClick={handleCreateEvent} className="flex items-center">
                     <Plus className="w-5 h-5 mr-1" /> New Event
                 </Button>
@@ -718,6 +1038,8 @@ const ClientDashboardView = ({ events, setView, setSelectedEventId }) => {
                 <StatCard title="Upcoming Events" value={upcomingCount} description="Events in next 30 days" icon={Clock} color="bg-red-500" />
                 <StatCard title="Completed" value={completedEvents} description="Successfully completed" icon={CheckCheck} color="bg-emerald-500" />
             </div>
+
+            <AISuggestionsCard userId={userId} />
 
             <div className="pt-4">
                 <div className="flex justify-between items-center mb-4">
@@ -1185,14 +1507,19 @@ const CreateEventForm = ({ setView, events, selectedEventId, selectedEventType, 
     );
 };
 
-const VendorsView = ({ setView, events, setBookings }) => {
+const VendorsView = ({ setView, events, setBookings, userId }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterType, setFilterType] = useState('All');
     const [showBookModal, setShowBookModal] = useState(false);
     const [selectedVendor, setSelectedVendor] = useState(null);
     const [selectedEventId, setSelectedEventId] = useState('');
+    const [showConflictModal, setShowConflictModal] = useState(false);
+    const [vendorConflict, setVendorConflict] = useState(null);
+    const [bookingSuccess, setBookingSuccess] = useState(false);
+    const [selectedBookingDate, setSelectedBookingDate] = useState('');
+    const [isBookingLoading, setIsBookingLoading] = useState(false);
 
-    const userEvents = events.filter(e => e.userId === CLIENT_DEMO_ID && e.status !== 'Completed');
+    const userEvents = events.filter(e => e.userId === userId && e.status !== 'Completed');
 
     const filteredVendors = initialDemoVendors.filter(vendor => {
         const matchesSearch = vendor.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -1202,31 +1529,113 @@ const VendorsView = ({ setView, events, setBookings }) => {
     });
 
     const handleBookClick = (vendor) => {
+        console.log('handleBookClick called for vendor:', vendor.businessName, vendor);
         setSelectedVendor(vendor);
-        setSelectedEventId(userEvents.length > 0 ? userEvents[0].id.toString() : '');
+        setSelectedEventId('');
+        setSelectedBookingDate('');
         setShowBookModal(true);
     };
 
+    const checkVendorAvailability = (vendor, eventDate) => {
+        // Check if vendor is already booked on the same date
+        const existingBookings = initialDemoBookings.filter(booking => 
+            booking.vendorId === vendor.id && 
+            booking.date === eventDate && 
+            (booking.status === 'Accepted' || booking.status === 'Pending')
+        );
+        
+        console.log('Availability check details:', {
+            vendorId: vendor.id,
+            eventDate,
+            existingBookings,
+            allBookings: initialDemoBookings,
+            isAvailable: existingBookings.length === 0
+        });
+        
+        return existingBookings.length === 0;
+    };
+
+    const getAlternativeVendors = (originalVendor, eventDate) => {
+        // Find similar vendors of the same business type who are available
+        const alternatives = initialDemoVendors.filter(vendor => 
+            vendor.id !== originalVendor.id &&
+            vendor.businessType === originalVendor.businessType &&
+            checkVendorAvailability(vendor, eventDate)
+        );
+
+        // Sort by rating (highest first)
+        return alternatives.sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 3);
+    };
+
+    const generateAIAlternativeSuggestion = (originalVendor, alternatives, eventDate) => {
+        return {
+            type: `Alternative ${originalVendor.businessType} Vendors`,
+            ideas: [
+                `Found ${alternatives.length} ${originalVendor.businessType.toLowerCase()} vendors available on ${eventDate}`,
+                `All alternatives are verified specialists with good ratings`,
+                `Recommendations sorted by rating and availability`,
+                `Similar service quality and budget range`,
+                `Popular vendors may have limited availability`
+            ],
+            budget: originalVendor.budgetRange,
+            vendors: alternatives.map(v => `${v.businessName} (${v.rating} stars)`)
+        };
+    };
+
     const handleConfirmBook = async () => {
-        if (!selectedVendor || !selectedEventId) return;
+        console.log('handleConfirmBook called', { selectedVendor, selectedBookingDate, selectedEventId });
+        
+        if (!selectedVendor || !selectedBookingDate) {
+            console.log('Missing required data:', { selectedVendor: !!selectedVendor, selectedBookingDate });
+            return;
+        }
 
-        const eventToBook = events.find(e => e.id === parseInt(selectedEventId));
-        if (!eventToBook) return;
+        setIsBookingLoading(true);
 
+        // Use selected date for booking
+        const eventDate = selectedBookingDate;
+        console.log('Checking availability for date:', eventDate);
+        
+        // Get event details if linked to existing event
+        const eventToBook = selectedEventId ? events.find(e => e.id === parseInt(selectedEventId)) : null;
+        console.log('Event to book:', eventToBook);
+        
+        // Check vendor availability
+        const isAvailable = checkVendorAvailability(selectedVendor, eventDate);
+        console.log('Vendor availability check:', { vendorId: selectedVendor.id, eventDate, isAvailable });
+        
+        if (!isAvailable) {
+            console.log('Vendor is not available, showing alternatives');
+            // Vendor is already booked - show alternatives
+            const alternatives = getAlternativeVendors(selectedVendor, eventDate);
+            const aiSuggestion = generateAIAlternativeSuggestion(selectedVendor, alternatives, eventDate);
+            
+            setVendorConflict({
+                originalVendor: selectedVendor,
+                alternatives: alternatives,
+                aiSuggestion: aiSuggestion,
+                eventDate: eventDate
+            });
+            setIsBookingLoading(false);
+            setShowConflictModal(true);
+            return;
+        }
+
+        // Vendor is available - proceed with booking
         const newBooking = {
             id: Date.now(),
-            eventId: eventToBook.id,
+            eventId: eventToBook ? eventToBook.id : Date.now() + 1000,
             vendorId: selectedVendor.id,
             vendorName: selectedVendor.businessName,
-            clientName: 'Ranjeetha M',
-            clientEmail: 'ranjeethademo@gmail.com',
+            clientName: userId ? userId.split('@')[0] : 'User',
+            clientEmail: userId,
             clientPhone: '9428855637',
-            eventTitle: eventToBook.title,
-            date: eventToBook.startTime.split('T')[0],
-            location: eventToBook.location,
-            guests: eventToBook.guests,
-            budget: eventToBook.budget,
-            description: eventToBook.description,
+            eventTitle: eventToBook ? eventToBook.title : `Event with ${selectedVendor.businessName}`,
+            date: eventDate,
+            location: eventToBook ? eventToBook.location : selectedVendor.location,
+            guests: eventToBook ? eventToBook.guests : 50,
+            budget: eventToBook ? eventToBook.budget : 25000,
+            description: eventToBook ? eventToBook.description : `Booking for ${selectedVendor.businessType} services`,
             status: 'Pending'
         };
 
@@ -1235,46 +1644,244 @@ const VendorsView = ({ setView, events, setBookings }) => {
             initialDemoBookings.push(newBooking);
             setBookings(prev => [...prev, newBooking]);
             setShowBookModal(false);
+            setSelectedBookingDate('');
+            setSelectedEventId('');
+            setIsBookingLoading(false);
+            setBookingSuccess(true);
+            setTimeout(() => setBookingSuccess(false), 3000);
             console.log('Booking request sent:', newBooking);
         } catch (error) {
             console.error('Failed to send booking request:', error);
+            setIsBookingLoading(false);
         }
     };
 
-    const BookingModal = () => (
+    const VendorConflictModal = () => (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <Card className="max-w-md w-full">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold">Book {selectedVendor.businessName}</h2>
-                    <Button variant="ghost" onClick={() => setShowBookModal(false)}><X className="w-5 h-5" /></Button>
-                </div>
-                <p className="text-gray-600 mb-4">Select which of your upcoming events you want to book this service for.</p>
-
-                {userEvents.length === 0 ? (
-                    <p className="text-red-500">You must create an event before booking a vendor.</p>
-                ) : (
-                    <SelectField
-                        label="Select Event"
-                        value={selectedEventId}
-                        onChange={(e) => setSelectedEventId(e.target.value)}
-                        options={userEvents.map(e => ({ value: e.id.toString(), label: `${e.title} (${e.date})` }))}
-                        required
-                    />
-                )}
-
-                <div className="mt-6 flex justify-end space-x-3">
-                    <Button variant="secondary" onClick={() => setShowBookModal(false)}>Cancel</Button>
-                    <Button
-                        variant="primary"
-                        onClick={handleConfirmBook}
-                        disabled={!selectedEventId}
-                    >
-                        Send Booking Request
+            <Card className="max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center mb-6 pb-4 border-b">
+                    <div>
+                        <h2 className="text-xl font-semibold text-gray-800">Vendor Already Booked</h2>
+                        <p className="text-gray-600 text-sm mt-1">
+                            <span className="font-medium">{vendorConflict?.originalVendor.businessName}</span> is already booked on <span className="font-medium">{vendorConflict?.eventDate}</span>
+                        </p>
+                        <p className="text-gray-500 text-xs mt-1">
+                            Here are similar available vendors for your event
+                        </p>
+                    </div>
+                    <Button variant="ghost" onClick={() => setShowConflictModal(false)}>
+                        <X className="w-5 h-5" />
                     </Button>
                 </div>
+
+                {vendorConflict && (
+                    <div className="space-y-6">
+                        {/* Booking Conflict Info */}
+                        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                            <div className="flex items-start">
+                                <div className="bg-orange-100 p-2 rounded mr-3 mt-0.5">
+                                    <CalendarIcon className="w-4 h-4 text-orange-600" />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="font-medium text-gray-800 mb-2">Booking Conflict</h3>
+                                    <p className="text-sm text-gray-600 mb-3">
+                                        <span className="font-medium">{vendorConflict.originalVendor.businessName}</span> already has a booking on <span className="font-medium">{vendorConflict.eventDate}</span>. 
+                                        We found {vendorConflict.alternatives.length} similar {vendorConflict.originalVendor.businessType.toLowerCase()} vendors available on this date.
+                                    </p>
+                                    <div className="text-xs text-gray-500">
+                                        All alternative vendors are verified and sorted by rating.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Alternative Vendors List */}
+                        <div>
+                            <h3 className="text-lg font-medium text-gray-800 mb-4">
+                                Alternative {vendorConflict.originalVendor.businessType} Vendors
+                            </h3>
+                            {vendorConflict.alternatives.length > 0 ? (
+                                <div className="space-y-3">
+                                    {vendorConflict.alternatives.map((vendor, index) => (
+                                        <Card key={vendor.id} className="border border-gray-200 hover:border-indigo-300 hover:shadow-md transition-all duration-200">
+                                            <div className="p-4">
+                                                <div className="flex justify-between items-start">
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center mb-2">
+                                                            <h4 className="font-semibold text-gray-800 text-lg">{vendor.businessName}</h4>
+                                                            <span className="ml-3 bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-medium">
+                                                                Available
+                                                            </span>
+                                                        </div>
+                                                        
+                                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                                            <div>
+                                                                <span className="text-gray-500">Type:</span>
+                                                                <p className="font-medium text-gray-800">{vendor.businessType}</p>
+                                                            </div>
+                                                            <div>
+                                                                <span className="text-gray-500">Location:</span>
+                                                                <p className="font-medium text-gray-800">{vendor.location}</p>
+                                                            </div>
+                                                            <div>
+                                                                <span className="text-gray-500">Budget:</span>
+                                                                <p className="font-medium text-gray-800">{vendor.budgetRange}</p>
+                                                            </div>
+                                                            <div>
+                                                                <span className="text-gray-500">Rating:</span>
+                                                                <div className="flex items-center">
+                                                                    <span className="text-yellow-500 mr-1">
+                                                                        {'★'.repeat(Math.floor(vendor.rating || 4))}
+                                                                    </span>
+                                                                    <span className="font-medium text-gray-800">{vendor.rating || 4.0}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="ml-6">
+                                                        <Button 
+                                                            size="sm" 
+                                                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2"
+                                                            onClick={() => {
+                                                                setSelectedVendor(vendor);
+                                                                setShowConflictModal(false);
+                                                                setShowBookModal(true);
+                                                            }}
+                                                        >
+                                                            Select Vendor
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Card>
+                                    ))}
+                                </div>
+                            ) : (
+                                <Card className="bg-gray-50 border border-gray-200">
+                                    <div className="text-center py-6">
+                                        <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <Search className="w-6 h-6 text-gray-500" />
+                                        </div>
+                                        <h4 className="font-medium text-gray-800 mb-2">No Similar Vendors Available</h4>
+                                        <p className="text-gray-600 text-sm mb-4">
+                                            No {vendorConflict.originalVendor.businessType.toLowerCase()} vendors are available on this date.
+                                        </p>
+                                        <div className="text-sm text-gray-600 space-y-1">
+                                            <p>• Try selecting a different date</p>
+                                            <p>• Browse other vendor categories</p>
+                                            <p>• Contact support for assistance</p>
+                                        </div>
+                                    </div>
+                                </Card>
+                            )}
+                        </div>
+
+                        <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+                            <Button 
+                                variant="outline" 
+                                onClick={() => {
+                                    setShowConflictModal(false);
+                                    setShowBookModal(true);
+                                }}
+                                className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                            >
+                                Try Different Date
+                            </Button>
+                            <Button 
+                                variant="secondary" 
+                                onClick={() => setShowConflictModal(false)}
+                                className="bg-gray-600 hover:bg-gray-700 text-white"
+                            >
+                                Close
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </Card>
         </div>
     );
+
+    const BookingModal = () => {
+        // Get today's date for minimum date selection
+        const today = new Date().toISOString().split('T')[0];
+        
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <Card className="max-w-md w-full">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-bold">Book {selectedVendor.businessName}</h2>
+                        <Button variant="ghost" onClick={() => setShowBookModal(false)}><X className="w-5 h-5" /></Button>
+                    </div>
+                    <p className="text-gray-600 mb-4">Select your event details to book this service.</p>
+
+                    <div className="space-y-4">
+                        {/* Date Selection */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Event Date *
+                            </label>
+                            <input
+                                type="date"
+                                value={selectedBookingDate}
+                                onChange={(e) => setSelectedBookingDate(e.target.value)}
+                                min={today}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                required
+                            />
+                        </div>
+
+                        {/* Event Selection (Optional) */}
+                        {userEvents.length > 0 && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Link to Existing Event (Optional)
+                                </label>
+                                <select
+                                    value={selectedEventId}
+                                    onChange={(e) => setSelectedEventId(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                >
+                                    <option value="">Create new booking</option>
+                                    {userEvents.map(e => (
+                                        <option key={e.id} value={e.id.toString()}>
+                                            {e.title} ({e.date})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
+                        {/* Vendor Info Display */}
+                        <div className="bg-gray-50 p-3 rounded-lg">
+                            <h4 className="font-medium text-gray-800 mb-2">Booking Details:</h4>
+                            <p className="text-sm text-gray-600">Vendor: {selectedVendor.businessName}</p>
+                            <p className="text-sm text-gray-600">Type: {selectedVendor.businessType}</p>
+                            <p className="text-sm text-gray-600">Location: {selectedVendor.location}</p>
+                            <p className="text-sm text-gray-600">Budget: {selectedVendor.budgetRange}</p>
+                        </div>
+                    </div>
+
+                    <div className="mt-6 flex justify-end space-x-3">
+                        <Button variant="secondary" onClick={() => setShowBookModal(false)}>Cancel</Button>
+                        <Button
+                            variant="primary"
+                            onClick={handleConfirmBook}
+                            disabled={!selectedBookingDate || isBookingLoading}
+                        >
+                            {isBookingLoading ? (
+                                <div className="flex items-center">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                    Checking...
+                                </div>
+                            ) : (
+                                'Check Availability & Book'
+                            )}
+                        </Button>
+                    </div>
+                </Card>
+            </div>
+        );
+    };
 
     return (
         <div className="p-6 space-y-6">
@@ -1318,12 +1925,30 @@ const VendorsView = ({ setView, events, setBookings }) => {
             </div>
 
             {showBookModal && selectedVendor && <BookingModal />}
+            {showConflictModal && vendorConflict && <VendorConflictModal />}
+            
+            {/* Success Notification */}
+            {bookingSuccess && (
+                <div className="fixed top-4 right-4 z-50">
+                    <Card className="bg-green-50 border-green-200 shadow-lg">
+                        <div className="flex items-center p-4">
+                            <div className="bg-green-100 p-2 rounded-full mr-3">
+                                <CheckCheck className="w-5 h-5 text-green-600" />
+                            </div>
+                            <div>
+                                <p className="font-semibold text-green-800">Booking Request Sent!</p>
+                                <p className="text-sm text-green-600">Vendor will respond soon</p>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+            )}
         </div>
     );
 };
 
 const MyBookingsView = ({ bookings }) => {
-    const userBookings = bookings.filter(b => b.clientName === 'Ranjeetha M');
+    const userBookings = bookings.filter(b => b.clientEmail === userId);
     const [filterStatus, setFilterStatus] = useState('All');
 
     const filteredBookings = userBookings.filter(b => filterStatus === 'All' || b.status === filterStatus);
@@ -1511,8 +2136,20 @@ const App = () => {
     const [selectedEventId, setSelectedEventId] = useState(null);
     const [isRedirectHandled, setIsRedirectHandled] = useState(false);
 
+    // Check for existing token on app load
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            // In a real app, you would decode the token to get user info
+            // For now, we'll keep the token but not auto-login
+            console.log('Token found in localStorage:', token);
+        }
+    }, []);
+
+    useEffect(() => {
+        console.log('Redirect useEffect:', { userId, userRole, isRedirectHandled, view });
         if (userId && userRole && !isRedirectHandled) {
+            console.log('Setting view to dashboard for user:', userId);
             if (userRole === USER_ROLES.VENDOR) {
                 const isProfileComplete = initialDemoVendors.some(v => v.userId === userId && v.businessName);
                 if (!isProfileComplete) {
@@ -1524,11 +2161,16 @@ const App = () => {
                 setView(VIEWS.DASHBOARD);
             }
             setIsRedirectHandled(true);
+        } else if (!userId && !userRole && view !== VIEWS.LANDING && view !== VIEWS.AUTH) {
+            // If user is logged out, go back to landing
+            setView(VIEWS.LANDING);
+            setIsRedirectHandled(false);
         }
-    }, [userId, userRole, vendorProfile.isComplete, isRedirectHandled]);
+    }, [userId, userRole, vendorProfile.isComplete, isRedirectHandled, view]);
 
 
     const handleLogout = () => {
+        localStorage.removeItem('token');
         setUserId(null);
         setUserRole(null);
         setVendorProfile({});
@@ -1558,6 +2200,13 @@ const App = () => {
     }, [userRole]);
 
     const renderContent = () => {
+        console.log('renderContent called with:', { 
+            userId: userId, 
+            userRole: userRole, 
+            view: view,
+            hasUserId: !!userId,
+            hasUserRole: !!userRole
+        });
         if (!userId || !userRole) {
             if (view === VIEWS.AUTH) {
                 return <AuthView setView={setView} setUserRole={setUserRole} setUserId={setUserId} userRole={userRole} setVendorProfile={setVendorProfile} />;
@@ -1572,7 +2221,7 @@ const App = () => {
         switch (view) {
             case VIEWS.DASHBOARD:
                 return userRole === USER_ROLES.CLIENT
-                    ? <ClientDashboardView events={events} setView={setView} setSelectedEventId={setSelectedEventId} />
+                    ? <ClientDashboardView events={events} setView={setView} setSelectedEventId={setSelectedEventId} userId={userId} />
                     : <VendorDashboardView bookings={bookings} vendorProfile={{userId}} setBookings={setBookings} />;
             case VIEWS.EVENTS_LIST:
                 return <EventsListView events={events} setView={setView} setSelectedEventId={setSelectedEventId} />;
@@ -1583,7 +2232,7 @@ const App = () => {
             case VIEWS.CREATE_EVENT:
                 return <CreateEventForm setView={setView} events={events} selectedEventId={selectedEventId} selectedEventType={selectedEventType} setEvents={setEvents} />;
             case VIEWS.VENDORS:
-                return <VendorsView setView={setView} events={events} setBookings={setBookings} />;
+                return <VendorsView setView={setView} events={events} setBookings={setBookings} userId={userId} />;
             case VIEWS.MY_BOOKINGS:
                 return <MyBookingsView bookings={bookings} />;
             case VIEWS.VENDOR_BOOKINGS:
@@ -1597,7 +2246,7 @@ const App = () => {
 
     const isMainAppLayout = userId !== null;
     const currentViewName = navLinks.find(l => l.view === view)?.name || (view === VIEWS.VENDOR_ONBOARDING ? 'Profile Setup' : APP_NAME);
-    const currentUserProfile = userRole === USER_ROLES.CLIENT ? { name: 'Ranjeetha M' } : initialDemoVendors.find(v => v.userId === userId) || { businessName: 'Vendor' };
+    const currentUserProfile = userRole === USER_ROLES.CLIENT ? { name: userId ? userId.split('@')[0] : 'User' } : initialDemoVendors.find(v => v.userId === userId) || { businessName: 'Vendor' };
 
 
     if (!isMainAppLayout) {
@@ -1609,7 +2258,6 @@ const App = () => {
             {/* Sidebar (Fixed for desktop) */}
             <nav className="hidden md:flex flex-col w-64 bg-white shadow-xl">
                 <div className="p-6 flex items-center border-b">
-                    <Sparkles className="w-8 h-8 text-indigo-600 mr-2" />
                     <span className="text-xl font-bold text-gray-800">{APP_NAME}</span>
                 </div>
 
@@ -1635,7 +2283,7 @@ const App = () => {
                             {userRole === USER_ROLES.CLIENT ? 'R' : (currentUserProfile.businessName ? currentUserProfile.businessName[0] : 'V')}
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-gray-800">{userRole === USER_ROLES.CLIENT ? 'Ranjeetha M' : currentUserProfile.businessName || 'Vendor User'}</p>
+                            <p className="text-sm font-semibold text-gray-800">{userRole === USER_ROLES.CLIENT ? (userId ? userId.split('@')[0] : 'User') : currentUserProfile.businessName || 'Vendor User'}</p>
                             <p className="text-xs text-gray-500 capitalize">{userRole}</p>
                         </div>
                     </div>
@@ -1661,7 +2309,7 @@ const App = () => {
                             <LogOut className="w-4 h-4" />
                         </Button>
 
-                        <span className="hidden sm:inline text-gray-600">Hi, Ranjeetha!</span>
+                        <span className="hidden sm:inline text-gray-600">Hi, {userId ? userId.split('@')[0] : 'User'}!</span>
                         <Button variant="danger" size="sm" onClick={handleLogout} className="hidden md:inline-flex">
                             Logout
                         </Button>
