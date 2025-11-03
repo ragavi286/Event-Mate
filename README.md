@@ -24,7 +24,10 @@ Event-Mate is a smart event management platform designed to simplify the process
 | MySQL | Database for storing event data |
 
 ---
+## Live UI Preview
 
+**Live Demo:**  
+[![Live UI](https://img.shields.io/badge/OPEN%20DEMO-Event--Mate-brightgreen?style=for-the-badge)](https://ranjeetha13.github.io/Event-Mate/)
 
 ---
 
